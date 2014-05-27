@@ -65,23 +65,3 @@ namespace SortAlgorithms
         }
     }
 }
-
-            for (int i = 0; i < nLen; i++)
-            {
-                int x = 0;
-                int count = 0;
-                while (x < nLen)
-                {
-                    if (nums[i] > nums[x] || (nums[i] == nums[x] && x > i))
-                    { count++; }
-                    x++;
-                }
-
-                nArray[count] = nums[i];
-            }
-            return nArray;
-        }
-
-
-    }
-}

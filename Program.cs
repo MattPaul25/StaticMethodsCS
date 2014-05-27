@@ -11,8 +11,6 @@ namespace SortAlgorithms
         static void Main(string[] args)
         {
             DateTime tim = DateTime.Now;
-
-
             int[] nums = { 3, 6, 3, 5, 5, 3, 4, 20, 4, 5, 3, 7, 6, 5, 4, 9, 100, 1, 24, 46, 6, 5, 6343, 32, 32, 54, 2, 4, 5, 42, 3, 43, 43, 78, 42, 34, 46 };
             nums = boolSort(nums);
             //nums = bubbleSort(nums);
@@ -26,8 +24,6 @@ namespace SortAlgorithms
 
             Console.ReadLine();
         }
-
-
         static int[] bubbleSort(int[] nums)
         {
             int y = nums.Length;
@@ -51,6 +47,24 @@ namespace SortAlgorithms
         {
             int nLen = nums.Length;
             int[] nArray = new int[nLen];
+
+            for (int i = 0; i < nLen; i++)
+            {
+                int x = 0;
+                int count = 0;
+                while (x < nLen)
+                {
+                    if (nums[i] > nums[x] || (nums[i] == nums[x] && x > i))
+                    { count++; }
+                    x++;
+                }
+
+                nArray[count] = nums[i];
+            }
+            return nArray;
+        }
+    }
+}
 
             for (int i = 0; i < nLen; i++)
             {

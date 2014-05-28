@@ -47,7 +47,6 @@ namespace SortAlgorithms
         {
             int nLen = nums.Length;
             int[] nArray = new int[nLen];
-
             for (int i = 0; i < nLen; i++)
             {
                 int x = 0;
@@ -58,7 +57,6 @@ namespace SortAlgorithms
                     { count++; }
                     x++;
                 }
-
                 nArray[count] = nums[i];
             }
             return nArray;

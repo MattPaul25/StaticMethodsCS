@@ -28,7 +28,7 @@ namespace SortAlgorithms
         static int[] bubbleSort(int[] nums)
         {
             int y = nums.Length;
-            for (int z = 0; z < (y - z); z++)
+            for (int z = 0; z < y; z++)
             {
                 int x = 0;
                 for (int i = x + 1; i < y; i++)

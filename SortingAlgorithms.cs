@@ -31,7 +31,7 @@ namespace SortAlgorithms
             for (int z = 0; z < y; z++)
             {
                 int x = 0;
-                for (int i = x + 1; i < y; i++)
+                for (int i = x + 1; i < (y-z); i++)
                 {
                     if (nums[i] < nums[x])
                     {

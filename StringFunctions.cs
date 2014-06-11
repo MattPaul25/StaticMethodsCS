@@ -56,10 +56,41 @@ namespace StringFunctions
             }
             return "";
         }
+          
+          static string insertText(string yourInsertString, string yourString, int placeMent)
+        {
+            if (yourString == "")
+            {
+                return yourInsertString;
+            }
+            else if (placeMent == 1)
+            {
+                return yourInsertString + yourString;            
+            }
+            else if (placeMent >= yourString.Length)
+            {
+                return yourString + yourInsertString;
+            }
+            else
+            {
+                string a = Left(yourString, placeMent);
+                string b = Right(yourString, placeMent);
+                return a + yourInsertString + b;
+            }
+        }
+
+        static string Left(string yourString, int PlaceMent)
+        {
+            return yourString.Substring(1, PlaceMent);
+        }
+        static string Right(string yourString, int PlaceMent)
+        {
+            return yourString.Substring(PlaceMent, yourString.Length - PlaceMent);
+        }
         static int Search(string yourString, string yourMarker, int yourInst = 1, bool caseSensitive = true)
         {
             //returns the placement of a string in another string
-            int num = 1;
+            int num = 0;
             int ginst = 1;
             int mlen = yourMarker.Length;
             int slen = yourString.Length;
@@ -96,6 +127,19 @@ namespace StringFunctions
                 return 0;
             }
         }
-    }
 
+        static int countString(string yourString, string yourMarker)
+        {   
+            int cnt = 0;
+            int mLen = yourMarker.Length;
+            for (int i = 1; i <= yourString.Length; i++)
+            {
+                if (yourString.Substring(i, mLen) == yourMarker)
+                { 
+                    cnt++; 
+                }
+            }
+            return cnt;
+        }
+    }
 }

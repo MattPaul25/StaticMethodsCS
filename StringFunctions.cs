@@ -141,5 +141,19 @@ namespace StringFunctions
             }
             return cnt;
         }
+               
+         private static int findIndex(string p, string[] anArr)
+         {
+            int x = anArr.Length;
+            int i;
+            for (i = 0; i < x; i++)
+            {
+                if (anArr[i] == p)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
     }
 }

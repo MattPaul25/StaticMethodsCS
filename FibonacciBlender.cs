@@ -14,15 +14,29 @@ namespace FibbonacciBlend
                                    24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 
                                    34, 35, 36, 37, 38, 39, 40 };
         static void Main(string[] args)
-        {
+        {   
+            //unOrder
+            string printString = "";
             int[] swappedSet;
-            //swappedSet = FibbyBlender(origSet, 9);
             swappedSet = Swap(origSet, 2);
-            swappedSet = Swap(swappedSet, 2); //this reverses the order back to normal
+            swappedSet = FibbyBlender(swappedSet, 9);
             for (int j = 0; j < origSet.Length; j++)
             {
-                Console.WriteLine(swappedSet[j].ToString());
+               printString = printString + " " + swappedSet[j].ToString();
             }
+            Console.WriteLine(printString);
+            Console.ReadLine();
+
+            //ReOrder
+            
+            swappedSet = FibbyReOrder(swappedSet, 9);
+            swappedSet = Swap(swappedSet, 2);
+            printString = "";
+            for (int j = 0; j < origSet.Length; j++)
+            {
+                printString = printString + " " + swappedSet[j].ToString();
+            }
+            Console.WriteLine(printString);
             Console.ReadLine();
         }
         private static int[] FibbyBlender(int[] origSet, int finNum)
@@ -48,12 +62,28 @@ namespace FibbonacciBlend
             }
             return newSet;
         }
+        private static int fibby(int i)
+        {
+            int cnt = 0;
+            int lead = 1;
+            int behind = 0;
+            int holder;
+            while (cnt <= i)
+            {
+                holder = behind;
+                behind = lead;
+                if ((holder + behind) > origSet.Length) { return 0; }
+                lead = holder + behind;
+                cnt++;
+            }
+            return lead;
+        }
         private static int[] FibbyReOrder(int[] origSet, int finNum)
         {
             int holder;
             int[] newSet = origSet;
             int[] blendedSet = new int[origSet.Length];
-            for (int i = finNum; i >= finNum; i++)
+            for (int i = finNum; i >= 0; i--)
             {
                 int swapNum = fibby(i);
                 blendedSet[i] = swapNum;
@@ -70,13 +100,13 @@ namespace FibbonacciBlend
             }
             return newSet;
         }
-        private static int fibby(int i)
+        private static int fibbyDown(int i)
         {
             int cnt = 0;
             int lead = 1;
             int behind = 0;
             int holder;
-            while (cnt <= i) 
+            while (cnt <= i)
             {
                 holder = behind;
                 behind = lead;
@@ -84,8 +114,8 @@ namespace FibbonacciBlend
                 lead = holder + behind;
                 cnt++;
             }
-            return lead;
-        }
+            return behind;
+        }        
         private static int[] Swap(int[]origSet, int sNum)
         {
             int[] NewSet = origSet;

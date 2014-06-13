@@ -46,6 +46,7 @@ namespace SortAlgorithms
         }
         static int[] boolSort(int[] nums)
         {
+            //resource expensive - pretty mediocre alg O(n2) + extra
             int nLen = nums.Length;
             int[] nArray = new int[nLen];
 

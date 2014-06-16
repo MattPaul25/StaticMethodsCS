@@ -10,27 +10,14 @@ namespace StringFunctions
     {
         static void Main(string[] args)
         {
-            string myText = mergeText(MyString);
-            Console.WriteLine(myText);
+            string eml = "Matt.Farguson@gmail.com";
+            string emlDomain = RightOf(eml, "@"); //returns gmail.com
+            string emlFirstName = LeftOf(eml, "."); //returns Matt
+            string emlLastName = eml.Substring(Search(eml, "."), Search(eml, "@") - Search(eml, ".")-1); //returns last name       
+            Console.WriteLine("Matt.Farguson@gmail.com's domain is " + emlDomain);
+            Console.WriteLine("Matt.Farguson@gmail.com's first name is " + emlFirstName);
+            Console.WriteLine("The email last name is " + emlLastName);
             Console.ReadLine();
-            myText = FibbyBlender(myText, 12);
-            Console.WriteLine(myText);
-            Console.ReadLine();
-            myText = Swap(myText, 3);
-            Console.WriteLine(myText);
-            Console.ReadLine();
-
-            //puts it back together
-            myText = Swap(myText, 3);
-            Console.WriteLine(myText);
-            Console.ReadLine();
-            myText = FibbyReOrder(myText, 12);
-            Console.WriteLine(myText);
-            Console.ReadLine();
-            myText = unMergeText(myText);
-            Console.WriteLine(myText);
-            Console.ReadLine();
-        }
         static string LeftOf(string yourString, string yourMarker)
         {
             //method or function that pulls everything left of a unique Marker

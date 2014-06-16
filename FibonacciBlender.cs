@@ -10,7 +10,7 @@ namespace FibbonacciBlend
     {
         //blends the array by positions via indecis created by fibbonacci sequence
 
-        public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";
+         public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";
                    
 
         static void Main(string[] args)
@@ -26,6 +26,8 @@ namespace FibbonacciBlend
             Console.ReadLine();
             myText = Swap(myText, 1);
             Console.WriteLine("After Swap: " + myText);
+            Console.ReadLine();
+            Console.WriteLine("The procedures to clean the file up start after enter...");
             Console.ReadLine();
 
             //puts it back together

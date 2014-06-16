@@ -10,35 +10,43 @@ namespace FibbonacciBlend
     {
         //blends the array by positions via indecis created by fibbonacci sequence
 
-         public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";
+        public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";
                    
 
         static void Main(string[] args)
         {
             //mucks it up
-            Console.WriteLine(MyString);
+
+            Console.WriteLine("Please Write a String");
+
+            string ConsoleString = Console.ReadLine();
+            Console.WriteLine(ConsoleString);
+            Console.WriteLine();
+            Console.WriteLine("Lets merge the string");
+
+            ConsoleString = mergeText(ConsoleString);
+
+            Console.WriteLine("After Merging: " + ConsoleString);
             Console.ReadLine();
-            string myText = mergeText(MyString);
-            Console.WriteLine("After Merging: " + myText);
+
+            ConsoleString = FibbyBlender(ConsoleString, 20);
+            Console.WriteLine("After FibBlend: " + ConsoleString);
             Console.ReadLine();
-            myText = FibbyBlender(myText, 12);
-            Console.WriteLine("After FibBlend: " + myText);
-            Console.ReadLine();
-            myText = Swap(myText, 1);
-            Console.WriteLine("After Swap: " + myText);
+            ConsoleString = Swap(ConsoleString, 1);
+            Console.WriteLine("After Swap: " + ConsoleString);
             Console.ReadLine();
             Console.WriteLine("The procedures to clean the file up start after enter...");
             Console.ReadLine();
 
-            //puts it back together
-            myText = Swap(myText, 1);
-            Console.WriteLine("After Re-swap: " + myText);
+            ////puts it back together
+            ConsoleString = Swap(ConsoleString, 1);
+            Console.WriteLine("After Re-swap: " + ConsoleString);
             Console.ReadLine();
-            myText = FibbyReOrder(myText, 12);
-            Console.WriteLine("After Fib-ReOrder: " + myText);
+            ConsoleString = FibbyReOrder(ConsoleString, 20); //must be higher than fibby blender order of magnitude
+            Console.WriteLine("After Fib-ReOrder: " + ConsoleString);
             Console.ReadLine();
-            myText = unMergeText(myText);
-            Console.WriteLine(myText);
+            ConsoleString = unMergeText(ConsoleString);
+            Console.WriteLine("After UnMerging the String: " + ConsoleString);
             Console.ReadLine();
         }
 

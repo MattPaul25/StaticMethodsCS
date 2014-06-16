@@ -9,24 +9,32 @@ namespace FibbonacciBlend
     class Program
     {
         //blends the array by positions via indecis created by fibbonacci sequence
-      
-        public static string MyString = "Here is a count to the number twenty: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20";
 
+        public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";
+                   
 
         static void Main(string[] args)
         {
             //mucks it up
+            Console.WriteLine(MyString);
+            Console.ReadLine();
             string myText = mergeText(MyString);
-            Console.WriteLine(myText);
+            Console.WriteLine("After Merging: " + myText);
             Console.ReadLine();
             myText = FibbyBlender(myText, 12);
-            myText = Swap(myText, 3);
-            Console.WriteLine(myText);
+            Console.WriteLine("After FibBlend: " + myText);
+            Console.ReadLine();
+            myText = Swap(myText, 1);
+            Console.WriteLine("After Swap: " + myText);
             Console.ReadLine();
 
             //puts it back together
-            myText = Swap(myText, 3);
+            myText = Swap(myText, 1);
+            Console.WriteLine("After Re-swap: " + myText);
+            Console.ReadLine();
             myText = FibbyReOrder(myText, 12);
+            Console.WriteLine("After Fib-ReOrder: " + myText);
+            Console.ReadLine();
             myText = unMergeText(myText);
             Console.WriteLine(myText);
             Console.ReadLine();

@@ -9,14 +9,10 @@ namespace FibbonacciBlend
     class Program
     {
         //blends the array by positions via indecis created by fibbonacci sequence
-
-        public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";
-                   
-
+        public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";              
         static void Main(string[] args)
         {
             //mucks it up
-
             Console.WriteLine("Please Write a String");
             string ConsoleString = Console.ReadLine();
             Console.WriteLine(ConsoleString);
@@ -44,7 +40,6 @@ namespace FibbonacciBlend
             Console.WriteLine("After UnMerging the String: " + ConsoleString);
             Console.ReadLine();
         }
-
         private static string mergeText(string someText)
         {
             int strLength = someText.Length - 1 ;
@@ -107,10 +102,8 @@ namespace FibbonacciBlend
             int[] blendedSet = new int[newSet.Length];
             for (int i = 0; i < someText.Length; i++)
             {
-
                 int swapChar = fibby(i, someText);
                 blendedSet[i] = swapChar;
-
                 if (blendedSet[i] != 0)
                 {
                     holder = newSet[i];
@@ -122,7 +115,6 @@ namespace FibbonacciBlend
                     newSet[i] = origSet[i];
                 }
             }
-
             return convertArray(newSet);
         }
         private static string[] SimpleSplit(string aString) 

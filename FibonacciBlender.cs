@@ -13,6 +13,13 @@ namespace FibbonacciBlend
         static void Main(string[] args)
         {
             //mucks it up
+            string aString = outIn(MyString);
+            Console.WriteLine(aString);
+            Console.ReadLine();
+            aString = inOut(aString);
+            Console.WriteLine(aString);
+            Console.ReadLine();
+
             Console.WriteLine("Please Write a String");
             string ConsoleString = Console.ReadLine();
             Console.WriteLine(ConsoleString);
@@ -197,6 +204,56 @@ namespace FibbonacciBlend
                 catch { }
             }
             return convertArray(NewSet);        
+        }
+        private static string outIn(string someText)
+        {   
+            int x ;
+            int i = 0;
+            int len = someText.Length;
+            if (len % 2 != 1)  
+            {
+                someText = someText + " ";                 
+            }
+            len = someText.Length;
+            x = (len + 1) / 2;
+            while (i < x)
+            {
+               string lMove = someText.Substring(0, 1);
+               string rMove = someText.Substring(len - 1, 1);
+               someText = someText.Insert(len - x, rMove);
+               someText = someText.Substring(0, len);               
+               someText = someText.Insert(x, lMove);
+               someText = someText.Substring(1, len);
+               i++;
+            }
+            if (someText.Substring(len - 1, 1) == " ")
+            { someText = someText.Substring(0, len - 2); }
+            return someText;
+        }
+        private static string inOut(string someText)
+        {
+            int x;
+            int i = 0;
+            int len = someText.Length;
+            if (len % 2 != 1)
+            {
+                someText = someText + " ";
+            }
+            x = (len + 1) / 2;
+            while (i < x)
+            {               
+                string lMove = someText.Substring(x- 1, 1);
+                someText = someText.Remove(x - 1, 1);
+                someText = someText.Insert(0, lMove);               
+                string rMove = someText.Substring(x - 1, 1); //
+                someText = someText.Remove(x - 1, 1);
+                someText = someText.Insert(len- 1, rMove); 
+                i++;
+            }
+            if (someText.Substring(len - 1, 1) == " " && (someText.Length % 2) != 1 )
+            { someText = someText.Substring(0, len - 1); }
+            return someText;
+
         }
     }
 }

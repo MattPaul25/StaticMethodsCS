@@ -9,14 +9,14 @@ namespace FibbonacciBlend
     class Program
     {
         //blends the array by positions via indecis created by fibbonacci sequence
-        public static string MyString = "This is a typical String. Its got letters and Numbers (like 4), along with punctation! ";              
+        public static string MyString = "Just stop would you, you need to tip for GOD SAKES";              
         static void Main(string[] args)
         {
             //mucks it up
-            string aString = outIn(MyString);
+            string aString = inOut(MyString);
             Console.WriteLine(aString);
             Console.ReadLine();
-            aString = inOut(aString);
+            aString = outIn(aString);
             Console.WriteLine(aString);
             Console.ReadLine();
 
@@ -206,54 +206,82 @@ namespace FibbonacciBlend
             return convertArray(NewSet);        
         }
         private static string outIn(string someText)
-        {   
+        {
+            int step;
             int x ;
             int i = 0;
             int len = someText.Length;
-            if (len % 2 != 1)  
+            if (len % 2 == 1)
             {
-                someText = someText + " ";                 
+                x = (len + 1) / 2;
+                while (i < x)
+                {
+                    string lMove = someText.Substring(0, 1);
+                    string rMove = someText.Substring(len - 1, 1);
+                    someText = someText.Insert(len - x, rMove);
+                    someText = someText.Substring(0, len);
+                    someText = someText.Insert(x, lMove);
+                    someText = someText.Substring(1, len);
+                    i++;
+                }
             }
-            len = someText.Length;
-            x = (len + 1) / 2;
-            while (i < x)
+            else
             {
-               string lMove = someText.Substring(0, 1);
-               string rMove = someText.Substring(len - 1, 1);
-               someText = someText.Insert(len - x, rMove);
-               someText = someText.Substring(0, len);               
-               someText = someText.Insert(x, lMove);
-               someText = someText.Substring(1, len);
-               i++;
+                x = len / 2;
+                step = 1;
+                while (i < x)
+                {
+                    string lMove = someText.Substring(0, 1);
+                    string rMove = someText.Substring(len - 1, 1);
+                    someText = someText.Insert(x - step, rMove);
+                    someText = someText.Substring(0, len);
+                    someText = someText.Insert(x + step, lMove);
+                    someText = someText.Substring(1, len);
+                    i++;
+                }
             }
-            if (someText.Substring(len - 1, 1) == " ")
-            { someText = someText.Substring(0, len - 2); }
+           
             return someText;
         }
         private static string inOut(string someText)
         {
+            int step;
             int x;
             int i = 0;
             int len = someText.Length;
-            if (len % 2 != 1)
+            if (len % 2 == 1)
             {
-                someText = someText + " ";
+                x = (len + 1) / 2;
+                step = 0;
+                while (i < len)
+                {
+                    string lMove = someText.Substring(x - 1, 1);
+                    someText = someText.Remove(x - 1, 1);
+                    someText = someText.Insert(0, lMove);
+                    string rMove = someText.Substring(x - 1, 1); //
+                    someText = someText.Remove(x - 1, 1);
+                    someText = someText.Insert(len - 1, rMove);
+                    i++;
+                }
             }
-            x = (len + 1) / 2;
-            while (i < x)
-            {               
-                string lMove = someText.Substring(x- 1, 1);
-                someText = someText.Remove(x - 1, 1);
-                someText = someText.Insert(0, lMove);               
-                string rMove = someText.Substring(x - 1, 1); //
-                someText = someText.Remove(x - 1, 1);
-                someText = someText.Insert(len- 1, rMove); 
-                i++;
-            }
-            if (someText.Substring(len - 1, 1) == " " && (someText.Length % 2) != 1 )
-            { someText = someText.Substring(0, len - 1); }
-            return someText;
+            else
+            {
+                x = len / 2;
+                step = 1;
 
+
+                while (i < len)
+                {
+                    string lMove = someText.Substring(x, 1);
+                    someText = someText.Remove(x, 1);
+                    someText = someText.Insert(0, lMove);
+                    string rMove = someText.Substring(x - step, 1);
+                    someText = someText.Remove(x - step, 1);
+                    someText = someText.Insert(len - 1, rMove);
+                    i++;
+                }
+            }
+            return someText;
         }
     }
 }

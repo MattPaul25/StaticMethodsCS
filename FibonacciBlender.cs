@@ -214,7 +214,7 @@ namespace FibbonacciBlend
             if (len % 2 == 1)
             {
                 x = (len + 1) / 2;
-                while (i < x)
+                while (i < x -1)
                 {
                     string lMove = someText.Substring(0, 1);
                     string rMove = someText.Substring(len - 1, 1);
@@ -229,7 +229,7 @@ namespace FibbonacciBlend
             {
                 x = len / 2;
                 step = 1;
-                while (i < x)
+                while (i < x -1)
                 {
                     string lMove = someText.Substring(0, 1);
                     string rMove = someText.Substring(len - 1, 1);
@@ -253,7 +253,7 @@ namespace FibbonacciBlend
             {
                 x = (len + 1) / 2;
                 step = 0;
-                while (i < len)
+                while (i < x -1)
                 {
                     string lMove = someText.Substring(x - 1, 1);
                     someText = someText.Remove(x - 1, 1);
@@ -270,7 +270,7 @@ namespace FibbonacciBlend
                 step = 1;
 
 
-                while (i < len)
+                while (i < x -1 )
                 {
                     string lMove = someText.Substring(x, 1);
                     someText = someText.Remove(x, 1);

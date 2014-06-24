@@ -12,7 +12,13 @@ namespace FibbonacciBlend
         public static string MyString = "Just stop would you, you need to tip for GOD SAKES";              
         static void Main(string[] args)
         {
-            //mucks it up
+
+            string thisString = Push(MyString);
+            Console.WriteLine(thisString);
+            Console.ReadLine();
+            Console.WriteLine(Pull(thisString));
+            Console.ReadLine();
+
             string aString = outIn(MyString);
             Console.WriteLine(aString);
             Console.ReadLine();
@@ -240,7 +246,6 @@ namespace FibbonacciBlend
                     i++;
                 }
             }
-           
             return someText;
         }
         private static string inOut(string someText)
@@ -268,8 +273,6 @@ namespace FibbonacciBlend
             {
                 x = len / 2;
                 step = 1;
-
-
                 while (i < x/2 )
                 {
                     string lMove = someText.Substring(x, 1);
@@ -280,6 +283,31 @@ namespace FibbonacciBlend
                     someText = someText.Insert(len - 1, rMove);
                     i++;
                 }
+            }
+            return someText;
+        }
+        private static string Push(string someText)
+        {
+
+            int num = someText.Length % 2 == 1 ? (someText.Length + 1) /2 : someText.Length / 2;
+            int i = 0;
+            while (i < num){
+                string myChar = someText.Substring(0, 1);
+                someText = someText.Substring(1, someText.Length - 1) + myChar;
+                i++;
+            }          
+            return someText;
+        }
+        private static string Pull(string someText)
+        {
+
+            int num = someText.Length % 2 == 1 ? (someText.Length + 1) / 2 : someText.Length / 2;
+            int i = someText.Length - 1;
+            while (i >= num)
+            {
+                string myChar = someText.Substring(someText.Length - 1, 1);
+                someText = myChar + someText.Substring(0, someText.Length - 1);
+                i--;
             }
             return someText;
         }

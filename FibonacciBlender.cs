@@ -35,12 +35,8 @@ namespace FibbonacciBlend
             //Console.WriteLine("After Merging: " + ConsoleString);
             //Console.ReadLine();
 
-            ConsoleString = FibbyBlender(ConsoleString);
+            ConsoleString = FibbyReOrder(ConsoleString);
             Console.WriteLine("After FibBlend: ");
-            Console.WriteLine(ConsoleString);
-            Console.ReadLine();
-            ConsoleString = FibbyBlender(ConsoleString);
-            Console.WriteLine("Another FibBlend: ");
             Console.WriteLine(ConsoleString);
             Console.ReadLine();
             //ConsoleString = Swap(ConsoleString, 1);
@@ -52,8 +48,7 @@ namespace FibbonacciBlend
             //ConsoleString = Swap(ConsoleString, 1);
             //Console.WriteLine("After Re-swap: " + ConsoleString);
             //Console.ReadLine();
-            ConsoleString = FibbyReOrder(ConsoleString); //must be higher than fibby blender order of magnitude
-            ConsoleString = FibbyReOrder(ConsoleString); 
+            ConsoleString = FibbyBlender(ConsoleString); //must be higher than fibby blender order of magnitude
             Console.WriteLine("After Fib-ReOrder: " + ConsoleString);
             Console.ReadLine();
             //ConsoleString = unMergeText(ConsoleString);
@@ -117,7 +112,7 @@ namespace FibbonacciBlend
         }
         private static string FibbyBlender(string someText)
         {
-            int finNum = someText.Length + 1;
+            int finNum = someText.Length;
             string holder;
             string[] origSet = SimpleSplit(someText);
             string[] newSet = origSet;
@@ -180,7 +175,7 @@ namespace FibbonacciBlend
         }
         private static string FibbyReOrder(string someText)
         {
-            int finNum = someText.Length + 1;
+            int finNum = someText.Length;
             string holder;
             string[] origSet = SimpleSplit(someText);
             string[] newSet = origSet;

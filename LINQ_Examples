@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LinqPractice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            People();
+
+            Linqtest();
+
+            Console.ReadLine();
+        }
+
+        private static void People()
+        {
+            var people = new List<person>
+            {
+                new person { firstName = "John", LastName = "Doe", age = 34},
+                 new person { firstName = "Samantha", LastName = "Williams", age = 34},
+                  new person { firstName = "Jane", LastName = "Doe", age = 26},
+                   new person { firstName = "John", LastName = "Williams", age = 40},
+                    new person { firstName = "Bob", LastName = "Waters", age = 12},
+            };
+
+            var result = from p in people
+                         where p.age > 0
+                         orderby p.LastName descending
+                         group p by p.LastName;
+
+            foreach (var item in result)
+            {
+                Console.WriteLine("{0} - {1}", item.Key, item.Count());
+            }
+
+            var result2 = from p in people
+                          where p.age < 35
+                          group p by p.age;
+
+            foreach (var item in result2)
+            {
+                Console.WriteLine(item.Key);
+                foreach (var p in item)
+                {
+                    Console.WriteLine("{0}, {1}", p.LastName, p.firstName);                    
+                }
+            }
+        }
+
+        private static void Linqtest()
+        {
+            var sample = "I enjoy writiing uber software in C#";
+
+            var query = from c in sample.ToLower() //linq that pulls out vowels
+                        where c == 'a' || c == 'e' || c == 'o' || c == 'i' || c == 'u'
+                        orderby c
+                        group c by c;
+                        
+
+            foreach (var item in query)
+            {
+                Console.WriteLine("{0} - {1}", item.Key, item.Count());
+
+            }
+        }
+    }
+
+    public class person
+    {
+        public string firstName { get; set; }
+        public string LastName { get; set; }
+        public int age { get; set; }
+    }
+}

@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GenericsExample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // ctrl K C to comment, ctrl K U to uncomment
+            // call data access layer
+            var result = new Result<int> { Success = true, Data = 5 };
+            var result2 = new Result<string> { Success = true, Data = "five" };
+            Console.WriteLine(result2.Success);
+            Console.WriteLine(result2.Data);
+            var helper = new ResultPrinter();
+            helper.Print(result);
+            helper.Print(result2);
+            Console.ReadLine();
+        }
+    }
+    public class Result<T>
+    {
+        // notice that the T is used for implementing that class with a type
+        // the properies of types T and U which is declared when the class is constructed from void Main
+        public bool Success { get; set; }
+        public T Data { get; set; }
+    }
+
+    public class ResultPrinter
+    {
+
+        public void Print<T>(Result<T> result)
+        {
+            Console.WriteLine(result.Success);
+            Console.WriteLine(result.Data);
+
+
+        }
+    
+	}
+  
+
+}

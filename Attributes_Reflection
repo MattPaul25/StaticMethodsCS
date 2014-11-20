@@ -1,0 +1,112 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Attributes
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //reflection hurts performance fyi - due to extra work compiler works
+
+            var assembly = Assembly.GetExecutingAssembly(); // get data about this assembly
+            Console.WriteLine(assembly.FullName);
+
+            var someTypes = assembly.GetTypes();
+            foreach (var st in someTypes)
+            {
+                Console.WriteLine("Type: " + st.Name + "\tBaseType: " + st.BaseType);
+
+                var props = st.GetProperties();
+                foreach (var p in props)
+                {
+                    Console.WriteLine("\tProperty: " + p.Name);
+                }
+
+                var fields = st.GetFields();
+                foreach (var f in fields)
+                {
+                    Console.WriteLine("\tFields: " + f.Name);
+                }
+
+                var methods = st.GetMethods();
+                foreach (var m in methods) 
+                {
+                    Console.WriteLine("\tMethods: " + m.Name);
+                }
+            }
+
+            var samp = new Sampling { Name = "Matt", Age = 26 };
+            var sampType = typeof(Sampling);
+            var nameProperty = sampType.GetProperty("Name");
+            Console.WriteLine("Property " + nameProperty.GetValue(samp));
+
+            var myMethod = sampType.GetMethod("MyMethod");
+            myMethod.Invoke(samp, null);
+
+            //ctrl . adds using statement to unknown assembly
+            var otherTypes = from t in Assembly.GetExecutingAssembly().GetTypes()
+                             where t.GetCustomAttributes<MyAttribute>().Count() > 0
+                        select t;
+
+            var AttributeTypes = assembly.GetTypes().Where(t => t.GetCustomAttributes<MyAttribute>().Count() > 0);
+            foreach (var at in AttributeTypes)
+            {
+                Console.WriteLine(at.Name);
+                var atMethods = at.GetMethods().Where(m => m.GetCustomAttributes<MyMethodAttribute>().Count() > 0);
+                foreach (var am in atMethods)
+                {
+                    Console.WriteLine("attribute methods " + am.Name);
+                }
+
+
+            }
+
+            foreach (var t in otherTypes)
+            {
+                Console.WriteLine(t.Name);
+            }
+
+
+
+            Console.ReadLine();
+        }
+    }
+     [MyAttribute(Name = "Joe", Version = 2)]
+    public class Sampling
+    {
+        public string Name { get; set; }
+        public int Age;
+
+        [MyMethod]
+        public void MyMethod() { Console.WriteLine("Hello from my Method" ); }
+        public void foo() { Console.WriteLine("foo"); }
+        public void bar() { Console.WriteLine("bar"); }
+        
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    class MyAttribute : Attribute
+	{
+        public string Name { get; set; }
+        public int Version { get; set; }
+
+	}
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class MyMethodAttribute : Attribute { }
+
+    [MyAttribute(Name = "Matt", Version = 1)]
+    public class Test
+    {
+
+        public int IntVal { get; set; }
+        public void Method() { }
+    }
+
+    public class NoAttribute { }
+}

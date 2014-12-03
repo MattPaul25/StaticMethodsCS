@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Data;
 using System.IO;
 using System.Collections;
+using System.Data.OleDb;
+
 
 namespace DailyOps
 {
@@ -17,6 +19,10 @@ namespace DailyOps
         private static int editDateColumnNumber;
         private static int inputDateColumnNumber;
         private static string myTable;
+        private static string filePathY;
+        private static string filePathT;
+        private static string logDumpPath;
+        private static string endPath; //path for moving files  - doesnt do anything while files arent being moved//
 
         static void Main(string[] args)
         {
@@ -25,7 +31,7 @@ namespace DailyOps
             //add ability to check for trim changes 
             //check if dates are the same
             // add table name and team name of indiviudal with person mapping table
-
+           
             DateTime d = DateTime.Today;
             Console.WriteLine("date " + d.ToString());
             Console.WriteLine("I'm Dana");
@@ -50,157 +56,201 @@ namespace DailyOps
             System.Threading.Thread.Sleep(200);
             Console.WriteLine(".");
             Console.WriteLine("lets get started");
-            string filePathY = "V:\\Research\\Shared\\DailyOps\\Yesterday";
-            string filePathT = "V:\\Research\\Shared\\DailyOps\\Yesterday";
-            string logDumpPath = "V:\\Research\\Shared\\DailyOps\\myFile.csv";
-            string endPath = "V:\\Research\\Shared\\DailyOps\\oldFiles\\";
-            runThroughFiles(filePathT, filePathY, endPath, logDumpPath);
+            filePathY = "V:\\Research\\Shared\\DailyOps\\Yesterday";
+            filePathT = "V:\\Research\\Shared\\DailyOps\\Today";
+            logDumpPath = "V:\\Research\\Shared\\DailyOps\\myFile.csv";
+            endPath = "V:\\Research\\Shared\\DailyOps\\oldFiles\\";
+            runThroughFiles();
             Console.WriteLine("Scipt Concluded");
             System.Threading.Thread.Sleep(1000);
             Console.WriteLine("Dana out..");
             System.Threading.Thread.Sleep(3000);
         }
 
-
-        private static void runThroughFiles(string filePath1, string filePath2, string endPath, string log)
+       
+        private static void runThroughFiles()
         {
-          /*loops through files in directory and runs routines
-            *outer most looping structure */
-           string[] filNames = Directory.GetFiles(filePath1, "*.*", SearchOption.TopDirectoryOnly);
-           string d = DateTime.Today.ToString("Mdyyyy");
-           foreach (string fileName in filNames)
-           {  
-               myTable = RightOf(fileName, "\\");
-               Console.WriteLine("working on " + myTable);
-               string fileName2 = filePath2 + "\\" + myTable;
-
-               if (System.IO.File.Exists(fileName2))
-               {
-                   ArrayList arr = grabCsvData(fileName, "tblToday", '|');
-                   editDateColumnNumber = GetColumnNumber("EditDate");
-                   inputDateColumnNumber = GetColumnNumber("InputDate");
-                   editByColumnNumber = GetColumnNumber("EditBy");
-                   inputByColumnNumber = GetColumnNumber("InputBy");
-                   int[] numbers = new[] { editDateColumnNumber, inputDateColumnNumber, editByColumnNumber, inputByColumnNumber };
-                   
-                   var result = (from n in numbers where n < rows.Count() select n);
-
-                   if (result.Count() < 4)
-                   {
-                       Console.WriteLine(myTable + "is missing edit or input headers");
-                   }
-                   else
-                   {
-                       arr = sortArrayList(arr);
-                       ArrayList arr2 = grabCsvData(fileName2, "tblYesterday", '|');
-                       ArrayList results = comparLists(arr, arr2);
-                       outputResults(results, log);
-                       FileInfo tFile = new FileInfo(fileName);
-                       FileInfo yFile = new FileInfo(fileName2);
-                       try
-                       { //move le files to tomorrows position
-                           yFile.MoveTo(endPath + d + myTable);
-                           tFile.MoveTo(fileName2);
-                       }
-                       catch (Exception x) { Console.WriteLine(x.Message); }
-                   }
-               }
-               else
-               {
-                   Console.WriteLine("Path in yesterday file could not be found.. Going to file 2");
-               }
-           }
-        }
-        static string RightOf(string yourString, string yourMarker)
-        {
-            //method or function that pulls everything right of a unique Marker
-            int len = yourString.Length;
-            int len2 = yourMarker.Length;
-            int cnt = 0;
-            for (int i = (len - len2); i > 0; i--)
+            /*loops through files in directory and runs routines
+              *outer most looping structure */
+            string[] filNames = Directory.GetFiles(filePathT, "*.*", SearchOption.TopDirectoryOnly);
+            string d = DateTime.Today.ToString("Mdyyyy");
+            foreach (string filName in filNames)
             {
-                cnt = cnt + 1;
-                string temp = yourString.Substring(i, len2);
-                if (temp == yourMarker)
+                for (int i = 0; i < 3; i++) { Console.WriteLine();}
+                myTable = RightOf(filName, "\\");
+                Console.WriteLine("working on " + myTable);
+                string fileName2 = filePathY + "\\" + myTable;
+
+                if (System.IO.File.Exists(fileName2))
                 {
-                    string newString = yourString.Substring(i + len2, cnt - 1);
-                    return newString;
+                    createRows(filName, '|'); //function gets the column names and assigns it to rows
+                    editDateColumnNumber = GetColumnNumber("EditDate");
+                    inputDateColumnNumber = GetColumnNumber("InputDate");
+                    editByColumnNumber = GetColumnNumber("EditBy");
+                    inputByColumnNumber = GetColumnNumber("InputBy");
+                    ArrayList arrToday = grabCsvData(filName, "tblToday", '|', true);
+
+                    if (arrToday.Count > 1)
+                    {
+
+                        int[] numbers = new[] { editDateColumnNumber, inputDateColumnNumber, editByColumnNumber, inputByColumnNumber };
+                        var result = (from n in numbers where n < rows.Count() select n);
+
+                        if (result.Count() < 4)
+                        {
+                            Console.WriteLine(myTable + "is missing edit or input headers");
+                        }
+                        else
+                        {
+                            ArrayList arrYesterday = grabCsvData(fileName2, "tblYesterday", '|', false);
+                            ArrayList results = comparLists(arrToday, arrYesterday);
+                            outputResults(results);
+                            //FileInfo tFile = new FileInfo(fileName);
+                            //FileInfo yFile = new FileInfo(fileName2);
+                            //try
+                            //{ //move le files to tomorrows position
+                            //    yFile.MoveTo(endPath + d + myTable);
+                            //    tFile.MoveTo(fileName2);
+                            //}
+                            //catch (Exception x) { Console.WriteLine(x.Message); }
+                        }
+                    }
+                    else 
+                    { 
+                        Console.WriteLine("could not find edits or inputs for that date"); 
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Path in yesterday file could not be found.. Going to next file");
                 }
             }
-            return "";
         }
-        private static void outputResults(ArrayList results, string filePath)
+        private static ArrayList cleanDataTable(DataTable dt, bool today)
         {
-            string[] ignore = { "EditBy", "InputBy", "EditDate", "InputDate" };
-            Console.WriteLine("Dumping results -- here: " + filePath);
+            //filters out dates of todays table so it only compares a small number of records to yesterday
+            string myOkDate1 = DateTime.Today.AddDays(-1).ToString("M/d/yyyy");
+            string myOkDate2 = DateTime.Today.AddDays(-2).ToString("M/d/yyyy");
+            int myLength = myOkDate1.Length;
+            int myLength2 = myOkDate2.Length;
+            ArrayList arList = new ArrayList();
+            arList.Add(rows);
+            if (today)
+            {
+               var query = from myRow in dt.AsEnumerable()
+                            where
+                            (myRow.Field<string>("InputDate") == myOkDate1 ||
+                            myRow.Field<string>("InputDate") == myOkDate2)
+                            || (myRow.Field<string>("EditDate") == myOkDate1 ||
+                            myRow.Field<string>("EditDate") == myOkDate2)
+                            select myRow;
+
+                foreach (var item in query)
+                {
+                    string[] myStrnArr = new string[rows.Count()];
+                    var myArr = item.ItemArray;
+                    int x = 0;
+                    foreach (var i in myArr)
+                    {
+                       myStrnArr[x] =  i.ToString();
+                       x++;
+                    }
+                    arList.Add(myStrnArr);
+                }
+            }
+            else if (!today)
+            {
+                var query = from myRow in dt.AsEnumerable() 
+                            select myRow;
+                 foreach (var item in query)
+                {
+                    string[] myStrnArr = new string[rows.Count()];
+                    var myArr = item.ItemArray;
+                    int x = 0;
+                    foreach (var i in myArr)
+                    {
+                       myStrnArr[x] =  i.ToString();
+                       x++;
+                    }
+                    arList.Add(myStrnArr);
+                }
+            }
+
+             return arList;
+        }        
+        private static void outputResults(ArrayList results) 
+        {
+            //this method moves results to CSV file while also changes person name and adds team
+            ArrayList alNames = pullNameData("V:\\Research\\Shared\\DailyOps\\NameMapping.xls");
+            string team = "Team";
+            string person = "";
+            string[] ignore = { "EditBy", "InputBy", "EditDate", "InputDate", "EntityID", "RoundID" }; //field names to not include in log results
+            Console.WriteLine("Dumping results -- here: " + logDumpPath);
             var csv = new StringBuilder();
-            int i = System.IO.File.Exists(filePath) ? 1: 0;
+            int i = System.IO.File.Exists(logDumpPath) ? 1: 0;
+            if (i == 0) { csv.Append("Date|Researcher|Team|Change_Type|ID|Table|Field|From|To"); csv.Append(Environment.NewLine); i++; }
+            
             while (i < results.Count)
             {
                 object arrObj = results[i];
-                string[] myResultsArr = arrObj as string[];
-                int test = Array.IndexOf(ignore, myResultsArr[4]);
-                if (Array.IndexOf(ignore, myResultsArr[4])==-1)
+                string[] arrMyResults = arrObj as string[];
+                int test = Array.IndexOf(ignore, arrMyResults[6]);
+                if (Array.IndexOf(ignore, arrMyResults[4]) == -1)
                 {
-                    csv.Append(myResultsArr[0] + "|" + myResultsArr[1] + "|" + myResultsArr[2]
-                        + "|" + myResultsArr[3] + "|" + myResultsArr[4] + "|" + myResultsArr[5]
-                        + "|" + myResultsArr[6] + "|" + myResultsArr[7]);
-                    csv.Append(Environment.NewLine);
+                    team = "";
+                    person = arrMyResults[1];
+                    for (int j = 0; j < alNames.Count; j++)
+                    {
+                        var objArr = alNames[j];
+                        string[] myArr = objArr as string[];
+                        if (myArr[2] == person || myArr[3] == person)
+                        {
+                            person = myArr[0];
+                            team = myArr[1];
+                            break;
+                        }
+                    }
+                        csv.Append(arrMyResults[0] + "|" + person + "|" + team
+                            + "|" + arrMyResults[3] + "|" + arrMyResults[4] + "|" + arrMyResults[5]
+                            + "|" + arrMyResults[6] + "|" + arrMyResults[7] + "|" + arrMyResults[8]);
+                        csv.Append(Environment.NewLine);
                 }
                 i++;
-                
             }
-            File.AppendAllText(filePath, csv.ToString());
+            File.AppendAllText(logDumpPath, csv.ToString());
         }
-        private static ArrayList sortArrayList(ArrayList arr)
+        private static ArrayList pullNameData(string sourceFile)
         {
-            /*deletes the data that has not been edited yesterday or the day before to clear out issues
-             */
-            Console.WriteLine("sorting and removing old records from today file, this will be a bit");
-            Console.WriteLine();
-            string EditDateVal= "";
-            string InputDateVal = "";
-            ArrayList sortedArrLis = new ArrayList();
-            sortedArrLis.Add(rows);
-            int i = 1;
-            int foundNum = 0;
-            int lastRow = arr.Count;
-            string myOkDate2 = DateTime.Today.AddDays(-2).ToString("M/d/yyyy");
-            string myOkDate1 = DateTime.Today.AddDays(-1).ToString("M/d/yyyy");
-            while (i < lastRow)
+            string con = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source= " + sourceFile + ";Extended Properties='Excel 8.0;HDR=Yes;'";
+            string[] MyHeaders = { "Researcher", "Team", "ToolEamil", "Initials" };
+            ArrayList myAl = new ArrayList();
+            myAl.Add(MyHeaders);
+            using (OleDbConnection connection = new OleDbConnection(con))
             {
-                object arrObj = arr[i];
-                string[] myArr = arrObj as string[];
-                try { EditDateVal = Convert.ToDateTime(myArr[editDateColumnNumber]).ToString("M/d/yyyy");} catch {  EditDateVal = ""; }
-                try { InputDateVal = Convert.ToDateTime(myArr[inputDateColumnNumber]).ToString("M/d/yyyy"); }  catch {  InputDateVal = ""; }
-                    if (EditDateVal == myOkDate1 || EditDateVal == myOkDate2)
+                connection.Open();
+                OleDbCommand command = new OleDbCommand("select * from [Sheet1$]", connection);
+                using (OleDbDataReader dr = command.ExecuteReader())
+                {
+                    while (dr.Read())
                     {
-                        sortedArrLis.Add(myArr);
-                        foundNum++;
+                        string[] objArr = { dr[0].ToString(), dr[5].ToString(), dr[2].ToString(), dr[3].ToString() };
+                        myAl.Add(objArr);
                     }
-                    else if (InputDateVal == myOkDate1 || InputDateVal == myOkDate2)
-                    {
-                        sortedArrLis.Add(myArr);
-                        foundNum++;
-                    }
-                Console.Write("\r{0}/{1}  - found: {2}     ", i + 1, lastRow, foundNum);
-
-                i++;
+                }
             }
-            Console.WriteLine();
-            return sortedArrLis;
-         }
+            return myAl;
+        }
         private static int GetColumnNumber(string ColumnName)
         {
             /*function gets the column number in array list that represents table from the first header row
               based on the column namespace */
-            Console.WriteLine("figuring out column ordinal positions");
+            Console.WriteLine("figuring out " + ColumnName + " ordinal position for " + myTable);
             int i = 0;
             foreach (string col in rows)
             {
-                if (rows[i] == ColumnName) 
-                { 
-                    return i; 
+                if (rows[i] == ColumnName)
+                {
+                    return i;
                 }
                 i++;
             }
@@ -211,8 +261,7 @@ namespace DailyOps
             //if it finds it - it looks for changes, otherwise it creates an input change type
             Console.WriteLine("comparing yesterdays file with todays...");
             ArrayList logFile = new ArrayList();
-            string[] MyHeaders = { "Date","Researcher" ,"Team", "Change_Type", "Field", "ID", "From", "To" };
-            string myDay = DateTime.Today.ToString();
+            string[] MyHeaders = { "Date", "Researcher", "Team", "Change_Type", "ID", "Table", "Field", "From", "To" };
             logFile.Add(MyHeaders);
             int myCount = arr.Count;
             int myCount2 = arr2.Count;
@@ -229,18 +278,18 @@ namespace DailyOps
                     object arrList2 = arr2[j];
                     string[] myArr2 = arrList2 as string[];
                     string myVal = myArr2[0];
-                    if (myLookup == myVal) 
+                    if (myLookup == myVal)
                     {
                         found = true;
-                        //value has been found now moving laterally to record differences
+                        //value has been found now moving horizontally to find and record differences
                         int k = 1;
                         while (k < rows.Count())
                         {
-                            if (myArr[k] != myArr2[k])
+                            if (myArr[k].ToLower().Trim() != myArr2[k].ToLower().Trim())
                             {
                                 object objectField = arr[0];
                                 string[] objectArr = objectField as string[];
-                                string[] AddTo = { myDay, myArr[editByColumnNumber],"Test", "Edit" ,objectArr[k], myArr[0], myArr2[k], myArr[k] };
+                                string[] AddTo = { myArr[editDateColumnNumber], myArr[editByColumnNumber], "", "Edit", myArr[0], myTable, objectArr[k], myArr2[k], myArr[k] };
                                 logFile.Add(AddTo);
                             }
                             k++;
@@ -258,7 +307,7 @@ namespace DailyOps
                     {
                         if (myArr[n] != "")
                         {
-                            string[] AddTo = { myDay, myArr[inputByColumnNumber], "Test", "Input", objectArr[n], myArr[0], "", myArr[n] };
+                            string[] AddTo = { myArr[inputDateColumnNumber], myArr[inputByColumnNumber], "", "Input", myArr[0], myTable, objectArr[n], "", myArr[n] };
                             logFile.Add(AddTo);
                         }
                         n++;
@@ -269,15 +318,26 @@ namespace DailyOps
             Console.WriteLine("End");
             return logFile;
         }
-
-        private static ArrayList grabCsvData(string fileName, string tableName, char splitChar)
+        private static void createRows(string fileName, char splitChar)
         {
+            //convert to function that just assigns value to field rows 
             Console.WriteLine("Adding " + myTable + " to program memory for further execution.. ");
             StreamReader sr = new StreamReader(fileName);
             string x = sr.ReadLine();
             ArrayList myList = new ArrayList();
             rows = x.Split(splitChar);
-            myList.Add(rows);
+        }
+        private static ArrayList grabCsvData(string fileName, string tableName, char splitChar, bool today)
+        {
+            Console.WriteLine("Adding " + myTable + " to program memory for further execution.. ");
+            StreamReader sr = new StreamReader(fileName);
+            string x = sr.ReadLine();
+            DataTable dt = new DataTable();
+            rows = x.Split(splitChar);
+            foreach (string item in rows)
+            {
+                dt.Columns.Add(item);
+            }
             int myInterval = rows.Count();
             string currentLine = sr.ReadLine();
             string[] currentArray = currentLine.Split(splitChar);
@@ -295,13 +355,69 @@ namespace DailyOps
                         currentLength = currentArray.Length;
                     }
                 }
-                myList.Add(currentArray);
+                if (currentArray.Length == rows.Length) { dt.Rows.Add(currentArray); }
+
                 currentLine = sr.ReadLine();
                 if (currentLine == null) { break; }
                 currentArray = currentLine.Split(splitChar);
             }
             sr.Dispose();
-            return myList;
+            dt = cleanDates(dt, "InputDate");
+            dt = cleanDates(dt, "EditDate");
+            ArrayList al = cleanDataTable(dt, today);
+            return al;
+        }
+        private static DataTable cleanDates(DataTable dt, string column)
+        {
+            //cleans dates of data table
+            Console.WriteLine("Cleaning Dates of column " + column + " of " + myTable);
+            foreach (DataRow row in dt.Rows)
+            {
+                string cellData = row[column].ToString();
+                if (cellData != "")
+                {
+                    string newCell = LeftOf(cellData.ToString(), " ");
+                    row[column] = newCell;
+                }
+            }
+            return dt;
+        }
+        private static string LeftOf(string yourString, string yourMarker)
+        {
+            //method or function that pulls everything left of a unique Marker
+            int anum = 0;
+            int len = yourString.Length;
+            int len2 = yourMarker.Length;
+            string newString = "";
+            do
+            {
+                string temp = yourString.Substring(anum, len2);
+                if (temp == yourMarker)
+                {
+                    return newString;
+                }
+                newString = newString + temp;
+                anum += 1;
+            } while (anum < len);
+            return "";
+        }
+        private static string RightOf(string yourString, string yourMarker)
+        {
+            //method or function that pulls everything right of a unique Marker
+            int len = yourString.Length;
+            int len2 = yourMarker.Length;
+            int cnt = 0;
+            for (int i = (len - len2); i > 0; i--)
+            {
+                cnt = cnt + 1;
+                string temp = yourString.Substring(i, len2);
+                if (temp == yourMarker)
+                {
+                    string newString = yourString.Substring(i + len2, cnt - 1);
+                    return newString;
+                }
+            }
+            return "";
         }
     }
 }

@@ -1,0 +1,506 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FTPDownload;
+using System.Net;
+using System.IO;
+using Excel = Microsoft.Office.Interop.Excel;
+using Access = Microsoft.Office.Interop.Access;
+
+
+namespace FTPDownload
+{
+    class Program
+    {
+        static string mcrLocation;
+        static string mcrName;
+        static string lclXmlDirectory;
+        static string lclXmlDirectoryTo;
+        static string ftpLocation;
+        static string ftpHost;
+        static string ftpUn;
+        static string ftpPw;
+        static string mcrLocationAccess;
+        static string mcrNameAccess;
+        static int Trys;
+
+        static void Main(string[] args)
+        {
+            Trys = 0;
+            //check if perameter file exists
+            Console.WriteLine("Hello, there. I am Alex..");
+            System.Threading.Thread.Sleep(2000);
+            Console.Write(".....Ill be helping you with your xml files");
+            System.Threading.Thread.Sleep(2000);
+            Console.WriteLine();
+            Console.WriteLine("You wondering what alex is? well its the following..");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine();
+            Console.Write("A...");
+            System.Threading.Thread.Sleep(500);
+            Console.Write("Always");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine();
+            Console.Write("L...");
+            System.Threading.Thread.Sleep(500);
+            Console.Write("Locating");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine();
+            Console.Write("and");
+            Console.WriteLine();
+            Console.Write("E...");
+            System.Threading.Thread.Sleep(500);
+            Console.Write("Editing");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine();
+            Console.Write("X...");
+            System.Threading.Thread.Sleep(500);
+            Console.Write("XMLS");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine();
+
+            Console.WriteLine("Checking to see if perameter text file exists...");
+            //if file doesnt exist this creates the text file location set up then exits application
+            checkTxtFile();
+            //these pull their variable names from a text file
+            Console.WriteLine("Grabbing script perameters from text file...");
+            createPerams();
+            Console.WriteLine("Downloading from ftp");
+            Console.WriteLine("....this may take a bit");
+            System.Threading.Thread.Sleep(2000);
+            Console.WriteLine(". . . . . . .");
+            ftpSyncDownload();            
+            Console.WriteLine("Alright lets clean the files up");
+            System.Threading.Thread.Sleep(2000);
+            Console.WriteLine(".......");
+            xmlCleanUp xc = new xmlCleanUp(lclXmlDirectory, lclXmlDirectoryTo);
+            xc.readXmlFiles();
+            Console.Write("running excel macro");
+            System.Threading.Thread.Sleep(1000);
+            Console.Write('.');
+            System.Threading.Thread.Sleep(1000);
+            Console.Write('.');
+            System.Threading.Thread.Sleep(1000);
+            Console.Write('.');
+            ExcelInt EI = new ExcelInt(mcrLocation, mcrName);
+            Console.WriteLine("running access macro");
+            AccessInt AI = new AccessInt(mcrLocationAccess, mcrNameAccess);
+            Console.WriteLine("moving files into old file folder...");
+            xc.moveXMLs();
+            Console.WriteLine("script concluding.. Good bye!");
+            System.Threading.Thread.Sleep(2000);
+        }
+        private static void checkTxtFile()
+        {
+            if (!File.Exists("LocationSetUp.txt"))
+            {
+                Console.WriteLine("It... Doesnt");
+                System.Threading.Thread.Sleep(2000);
+                File.Create("LocationSetUp.txt");
+                Console.WriteLine("File Created.. ");
+                Console.WriteLine("Check in C:\\Users\\*name*\\AppData\\Local\\Apps\\2.0");
+                System.Threading.Thread.Sleep(10000);
+                Environment.Exit(0);
+            }
+        }
+        private static void createPerams()
+        {
+            mcrLocation = strMethods.readFile("LocationSetUp.txt", "mcrLocation", "|");
+            mcrName = strMethods.readFile("LocationSetUp.txt", "mcrName", "|");
+            lclXmlDirectory = strMethods.readFile("LocationSetUp.txt", "lclXmlDirectory", "|");
+            lclXmlDirectoryTo = strMethods.readFile("LocationSetUp.txt", "lclXmlDirectoryTo", "|");
+            ftpLocation = strMethods.readFile("LocationSetUp.txt", "ftpLocation", "|");
+            ftpHost = strMethods.readFile("LocationSetUp.txt", "ftpHost", "|");
+            ftpUn = strMethods.readFile("LocationSetUp.txt", "ftpUn", "|");
+            ftpPw = strMethods.readFile("LocationSetUp.txt", "ftpPw", "|");
+            mcrLocationAccess = strMethods.readFile("LocationSetUp.txt", "mcrLocationAccess", "|");
+            mcrNameAccess = strMethods.readFile("LocationSetUp.txt", "mcrNameAccess", "|");
+        }
+        private static void ftpSyncDownload()
+        {
+            FtpSync fs = new FtpSync(lclXmlDirectory, ftpLocation, ftpHost, ftpUn, ftpPw);
+            if (Trys <= 3)
+            {
+                try
+                {
+                    fs.DownloadFileFTP();
+                    Console.WriteLine("Grabbing remainders due to bad gateways");
+                    fs.DownloadFileFTP();
+                }
+                catch (Exception x)
+                {
+                    if (Trys < 3)
+                    {
+                        Console.WriteLine(x.Message);
+                        Trys++;
+                        ftpSyncDownload();
+                    }
+                    else
+                    {
+                        Environment.Exit(0);
+                    }
+                }
+            }
+        }
+    }
+    class AccessInt
+    {
+        private string mMcrName;
+        private string mFilePath;
+        private int attemptNum;
+
+        public AccessInt(string filePath, string mcrName)
+        {
+            mFilePath = filePath;
+            mMcrName = mcrName;
+            attemptNum = 1;
+            RunMacro();            
+        }
+        private void RunMacro()
+        {
+            Console.WriteLine("opening access db, running macro " + mMcrName);
+            Access.Application oAccess = new Access.Application();
+            oAccess.Visible = false;
+            oAccess.OpenCurrentDatabase(mFilePath, false);
+            try
+            {                
+                oAccess.Run(mMcrName);
+            }
+            catch (Exception x)
+            {
+                System.Threading.Thread.Sleep(10000);
+                oAccess.Quit();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(oAccess);
+                oAccess = null;               
+                if (attemptNum < 3)
+                {
+                    attemptNum++;
+                    Console.WriteLine("attempting time " + attemptNum);
+                    RunMacro();
+                }
+                Console.WriteLine("something went wrong with the access macro: \n" + x.Message);
+            }
+            finally
+            {
+                oAccess.Quit();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(oAccess);
+                oAccess = null;
+            }
+        }    
+    }
+    class ExcelInt
+    {
+        private string mMcrName;
+        private string mFilePath;
+        public ExcelInt(string filePath, string mcrName)
+        {
+            mFilePath = filePath;
+            mMcrName = mcrName;
+            RunMacro();
+        }
+        private void RunMacro()
+        {
+            try
+            {
+                Console.WriteLine("opening excel file, running macro " + mMcrName);
+                Excel.Application xlApp = new Excel.Application();
+                Excel.Workbook xlwb;
+                xlwb = xlApp.Workbooks.Open(mFilePath);
+                xlApp.Visible = false;
+                xlApp.Run(mMcrName);
+                xlApp.Quit();
+                Console.WriteLine("removing excel objects from memory");
+                removeObject(xlApp);
+                removeObject(xlwb);
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine("something went wrong with the excel macro: \n" + x.Message);
+                System.Threading.Thread.Sleep(10000);
+            }
+        }
+
+        private void removeObject(object obj)
+        {
+            try
+            {
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+                obj = null;
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
+                obj = null;
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+    }
+    class xmlCleanUp
+    {
+        string[] filNames;
+        private string mFolderTo;
+        private string mFolder;
+
+        public xmlCleanUp(string folder, string folderTo)
+        {
+            mFolder = folder;
+            mFolderTo = folderTo;
+            filNames = Directory.GetFiles(mFolder, "*.*", SearchOption.TopDirectoryOnly);
+            
+        }
+        public void readXmlFiles()
+        {
+            foreach (string i in filNames)
+            {
+                string newPath;
+                string ext = i.Substring(i.Length - 3, 3);
+                if (ext == "xml")
+                {
+                    File.Move(i, Path.ChangeExtension(i, ""));
+                    newPath = i.Substring(0, i.Length - 4);
+                }
+                else 
+                { 
+                    newPath = i; 
+                }
+                string tempFile = readFile(newPath);
+                File.Delete(newPath);
+                newPath = newPath.Substring(0, newPath.Length - 4) + "_C.xml";
+
+                if (File.Exists(newPath)) { File.Delete(newPath); }
+                
+                File.Move(tempFile, newPath);
+                string pathPrev =  mFolderTo + "\\" + strMethods.RightOf(newPath, "\\");
+                if (File.Exists(pathPrev)) { File.Delete(newPath); } //checks to see if xml file name already ran
+
+                filNames = Directory.GetFiles(mFolder, "*.*", SearchOption.TopDirectoryOnly);
+            }
+        }
+
+        private string readFile(string newPath)
+        {
+            string tempFile = Path.GetTempFileName();
+            using (var reader = new StreamReader(newPath))
+            using (var writer = new StreamWriter(tempFile))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Length >= 6 && line.Substring(0, 6) == "<edgar")
+                    {
+                        writer.WriteLine(line);
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            string header = line.Substring(0, strMethods.Search(line, ">", 1)).Trim();
+                            if (header == "<schemaVersion>")
+                            {
+                                //this adds a line that allows excel xml to undo it
+                                writer.WriteLine(line);
+                            }
+                            if (header != "<pre>")
+                            {
+                                writer.WriteLine(line);
+                            }
+                            else if (header == "<pre>")
+                            {
+                                break;
+                            }
+
+                        }
+                    }
+                }
+            }
+            return tempFile;
+        }
+        public void moveXMLs()
+        {
+            foreach (string file in filNames)
+            {
+                FileInfo mFile = new FileInfo(file);
+                if (mFile.Exists)
+                {
+                    try { mFile.MoveTo(mFolderTo + "\\" + mFile.Name); }                    
+                    catch { mFile.Delete(); }                    
+                }
+            }
+        }
+    }
+    class FtpSync 
+    {
+        string mFilePathTo;
+        string mFilePathFrom;
+        string mFtpHost;
+        string mUN;
+        string mPW;
+        public FtpSync(string filePathTo, string filePathFrom, string ftpHost, string un, string pw)
+        {
+            mFilePathTo = filePathTo;
+            mFtpHost = ftpHost;
+            mFilePathFrom = filePathFrom;
+            mUN = un;
+            mPW = pw;
+        }
+        public void DownloadFileFTP()
+        {
+            string ftphost = mFtpHost;           
+            var fleList = getFileNames();                       
+            using (WebClient request = new WebClient())
+            {
+                foreach (string x in fleList)
+                {
+                    try
+                    {
+                        Console.Write("downloading: " + x);
+                        string inputfilepath = mFilePathTo + x;
+                        string ftpfullpath = mFilePathFrom + x;
+                        request.Credentials = new NetworkCredential(mUN, mPW);
+                        byte[] fileData = request.DownloadData(ftpfullpath);
+                        using (FileStream file = File.Create(inputfilepath))
+                        {
+                            file.Write(fileData, 0, fileData.Length);
+                            file.Close();
+                        }
+                        DeleteFileOnServer(x);
+                        Console.Write("..deleting from ftp server" + Environment.NewLine);
+                    }
+                    catch (Exception t) { Console.WriteLine(t.Message); }
+                }
+            }
+        }
+        public void DeleteFileOnServer(string x)
+        {
+                try
+                {
+                    FtpWebResponse ftpResponse = null;
+                    FtpWebRequest ftpRequest = null;
+                    ftpRequest = (FtpWebRequest)FtpWebRequest.Create(mFilePathFrom + x);
+                    ftpRequest.Credentials = new NetworkCredential(mUN, mPW);
+                    ftpRequest.UseBinary = true;
+                    ftpRequest.UsePassive = true;
+                    ftpRequest.Proxy = null;
+                    ftpRequest.KeepAlive = true;
+                    ftpRequest.Method = WebRequestMethods.Ftp.DeleteFile;
+                    ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
+                    ftpResponse.Close();
+                    ftpRequest = null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        public List<string> getFileNames()
+        {
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(mFilePathFrom);
+                request.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+                request.Credentials = new NetworkCredential(mUN, mPW);
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+                Stream responseStream = response.GetResponseStream();
+
+            StreamReader reader = new StreamReader(responseStream);
+            List<string> fleNames = new List<string>();
+            string myString = reader.ReadLine();
+            while (myString != null)
+            {
+                if (myString.Substring(0, 1) != "<")
+                {
+                    int startPlce = strMethods.Search(myString, "<A HREF=") + 8 ;
+                    int endPlce = (strMethods.Search(myString, ">", 1) - 2) - startPlce;
+                    myString = myString.Substring(startPlce, endPlce);
+                    fleNames.Add(myString);
+                }
+                myString = reader.ReadLine();
+            }
+            reader.Close();
+            response.Close();
+            return fleNames;
+        }
+    }
+    static class strMethods
+    {
+        public static string readFile(string FileName, string myText, string finder)
+        {
+            StreamReader sr = new StreamReader(FileName);
+            string returnString = "";
+            string aString = sr.ReadLine();
+            while (aString != null)
+            {
+                string mySub = aString.Substring(0, myText.Length);
+                if (mySub == myText)
+                {
+                    int aNum = Search(aString, finder, 1);
+                    int bNum = Search(aString, finder, 2) - 1;
+                    returnString = aString.Substring(aNum, bNum - aNum);
+                    break;
+                }
+             aString = sr.ReadLine();
+            }
+            sr.Close();
+            return returnString;
+        }
+       public static int Search(string yourString, string yourMarker, int yourInst = 1, bool caseSensitive = true)
+        {
+            int num = 0;
+            int ginst = 1;
+            int mlen = yourMarker.Length;
+            int slen = yourString.Length;
+            string tString = "";
+            try
+            {
+                if (caseSensitive == false)
+                {
+                    yourString = yourString.ToLower();
+                    yourMarker = yourMarker.ToLower();
+                }
+                while (num < slen)
+                {
+                    tString = yourString.Substring(num, mlen);
+
+                    if (tString == yourMarker && ginst == yourInst)
+                    {
+                        return num + 1;
+                    }
+                    else if (tString == yourMarker && yourInst != ginst)
+                    {
+                        ginst += 1;
+                        num += 1;
+                    }
+                    else
+                    {
+                        num += 1;
+                    }
+                }
+                return 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+       public static string RightOf(string yourString, string yourMarker)
+       {
+           //method or function that pulls everything right of a unique Marker
+           int len = yourString.Length;
+           int len2 = yourMarker.Length;
+           int cnt = 0;
+           for (int i = (len - len2); i > 0; i--)
+           {
+               cnt = cnt + 1;
+               string temp = yourString.Substring(i, len2);
+               if (temp == yourMarker)
+               {
+                   string newString = yourString.Substring(i + len2, cnt - 1);
+                   return newString;
+               }
+           }
+           return "";
+       }
+    }
+}
+    
+

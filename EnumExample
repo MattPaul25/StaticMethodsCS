@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EnumExample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("Type a supero's name: ");
+            string userValue = Console.ReadLine();
+
+            SuperHero myVal;
+            //Enum is a static class to see if a string matches super hero enum type : using tryParse method 
+            //with generic type of SuperHero enum
+            //user value is the value we are parsing, 
+            //second peram is ignore case
+            // this tryparse test whether it is true - and outputs the enumeration of the value #badass
+            if (Enum.TryParse<SuperHero>(userValue, true, out myVal)) 
+            {
+                switch (myVal)
+                {
+                    case SuperHero.BATMAN:
+                        Console.WriteLine("Caped Crusader");
+                        break;
+                    case SuperHero.ROBIN:
+                        Console.WriteLine("Gay Caped Crusader");
+                        break;
+                    case SuperHero.SUPERMAN:
+                        Console.WriteLine("Man of Steel");
+                        break;
+                    case SuperHero.GREENLANTERN:
+                        Console.WriteLine("Emerald Knight");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else 
+            { 
+                Console.WriteLine("does not compute"); 
+            }
+
+            Console.ReadLine();
+        }
+    }
+    enum SuperHero
+    {
+        BATMAN, 
+        ROBIN,
+        SUPERMAN,
+        GREENLANTERN
+    }
+}

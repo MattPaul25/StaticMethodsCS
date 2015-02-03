@@ -140,7 +140,16 @@ namespace StringFunctions
             }
             return cnt;
         }
-               
+        
+        public static int countString2(string yourString, string yourMarker)
+        {
+            //counts the number of strings that exist in another string
+            int myCnt = 0;
+            string newstring = yourString.Replace(yourMarker, "");
+            myCnt = (yourString.Length - newstring.Length) / yourMarker.Length;
+            return myCnt;
+        }       
+        
          private static int findIndex(string p, string[] anArr)
          {
             int x = anArr.Length;

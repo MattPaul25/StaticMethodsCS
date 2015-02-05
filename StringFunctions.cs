@@ -127,7 +127,7 @@ namespace StringFunctions
             }
         }
 
-        static int countString(string yourString, string yourMarker)
+        static int CountString(string yourString, string yourMarker)
         {   
             int cnt = 0;
             int mLen = yourMarker.Length;
@@ -141,7 +141,7 @@ namespace StringFunctions
             return cnt;
         }
         
-        public static int countString2(string yourString, string yourMarker)
+        public static int CountString2(string yourString, string yourMarker)
         {
             //counts the number of strings that exist in another string
             int myCnt = 0;
@@ -150,7 +150,7 @@ namespace StringFunctions
             return myCnt;
         }       
         
-         private static int findIndex(string p, string[] anArr)
+         public static int FindIndex(string p, string[] anArr)
          {
             int x = anArr.Length;
             int i;

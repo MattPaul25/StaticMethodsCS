@@ -86,46 +86,47 @@ namespace StringFunctions
         {
             return yourString.Substring(PlaceMent, yourString.Length - PlaceMent);
         }
-        static int Search(string yourString, string yourMarker, int yourInst = 1, bool caseSensitive = true)
-        {
-            //returns the placement of a string in another string
-            int num = 0;
-            int ginst = 1;
-            int mlen = yourMarker.Length;
-            int slen = yourString.Length;
-            string tString = "";
-            try
-            {
-                if (caseSensitive == false)
-                {
-                    yourString = yourString.ToLower();
-                    yourMarker = yourMarker.ToLower();
-                }
-                while (num < slen)
-                {
-                    tString = yourString.Substring(num, mlen);
+          public static int Search(string yourString, string yourMarker, int yourInst = 1, bool caseSensitive = true)
+       {
+           //returns the placement of a string in another string
+           int num = 0;
+           int currentInst = 1;
+           int markerLength = yourMarker.Length;
+           int stringLength = yourString.Length;
+          
+           if (!caseSensitive)
+           {
+               //if optional argument, case sensitive is false convert string and marker to lowercase
+               yourString = yourString.ToLower();
+               yourMarker = yourMarker.ToLower();
+           }
+           try
+           {    
+               bool found = false;           
+               while (num < stringLength)
+               {
+                  string testString = yourString.Substring(num, markerLength);
+                  num += 1;
 
-                    if (tString == yourMarker && ginst == yourInst)
-                    {
-                        return num + 1;
-                    }
-                    else if (tString == yourMarker && yourInst != ginst)
-                    {
-                        ginst += 1;
-                        num += 1;
-                    }
-                    else
-                    {
-                        num += 1;
-                    }
-                }
-                return 0;
-            }
-            catch
-            {
-                return 0;
-            }
-        }
+                   if (testString == yourMarker)
+                   {
+                       if (currentInst == yourInst)
+                       {
+                           found = true;
+                           break;
+                       }
+                       currentInst++;
+                   }
+                   num++;
+               }              
+           }
+           catch
+           {
+               num = 0;
+           }
+           num = found ? num : 0;
+           return num;
+       }
 
         static int CountString(string yourString, string yourMarker)
         {   

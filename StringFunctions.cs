@@ -87,26 +87,19 @@ namespace StringFunctions
             return yourString.Substring(PlaceMent, yourString.Length - PlaceMent);
         }
         
-        public static int Search(string yourString, string yourMarker, int yourInst = 1, bool caseSensitive = true)
-        {
+       public static int Search(string yourString, string yourMarker, int yourInst = 1, bool caseSensitive = true)
+       {
            //returns the placement of a string in another string
            int num = 0;
-           int currentInst = 1;
-           int markerLength = yourMarker.Length;
-           int stringLength = yourString.Length;
-           
-           if (!caseSensitive)
-           {
-               //if optional argument, case sensitive is false convert string and marker to lowercase
-               yourString = yourString.ToLower();
-               yourMarker = yourMarker.ToLower();
-           }
+           int currentInst = 1;           
+          //if optional argument, case sensitive is false convert string and marker to lowercase
+           if (!caseSensitive) { yourString = yourString.ToLower(); yourMarker = yourMarker.ToLower(); }
            bool found = false;
            try
-           {               
-               while (num < stringLength)
+           {
+               while (num < yourString.Length)
                {
-                  string testString = yourString.Substring(num, markerLength);
+                   string testString = yourString.Substring(num, yourMarker.Length);
                   num += 1;
                    if (testString == yourMarker)
                    {
@@ -127,6 +120,7 @@ namespace StringFunctions
            num = found ? num : 0;
            return num;
        }
+    }
 
         static int CountString(string yourString, string yourMarker)
         {   

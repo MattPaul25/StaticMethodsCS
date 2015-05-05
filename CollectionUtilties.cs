@@ -36,6 +36,34 @@ using System.Data;
             }
             return dt;
         }
+        public static DataTable ImportCSV(string fullPath, char sepChar = ',')
+        {
+            DataTable dt = new DataTable();
+            using (StreamReader sr = new StreamReader(fullPath))
+            {
+                string firstLine = sr.ReadLine();
+                var headers = firstLine.Split(sepChar);
+                foreach (var header in headers)
+                {
+                    dt.Columns.Add(header);
+                }
+                int columnInterval = headers.Count();
+                string newLine = sr.ReadLine();
+                while (newLine != null)
+                {
+                    var fields = newLine.Split(sepChar); // csv delimiter              
+                    string[] adjustedFields = new string[columnInterval];
+                    //want to bring in exactly the column interval amount of columns
+                    for (int i = 0; i < columnInterval; i++)
+                    {
+                        adjustedFields[i] = fields[i];
+                    }
+                    dt.Rows.Add(adjustedFields);
+                    newLine = sr.ReadLine();
+                }
+            }
+            return dt;
+        }
         public static string Vlookup(DataTable dt, string LookupVal, string LookupColumn, string ReturnColumn)
         {
             string result = "";

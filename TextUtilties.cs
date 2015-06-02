@@ -37,23 +37,23 @@ namespace StringFunctions
             } while (anum < len);
             return "";
         }
-            public static string RightOf(string yourString, string yourMarker)
+           public static string RightOf(string yourString, string yourMarker)
         {
             //method or function that pulls everything right of a unique Marker
             string newString = "";
-            int len = yourString.Length;
-            int len2 = yourMarker.Length;
-            if (len > len2)
+            int stringLen = yourString.Length;
+            int markLen = yourMarker.Length;
+            if (stringLen > markLen)
             {
                 int cnt = 0;
-                
-                for (int i = (len - len2); i > 0; i--)
+
+                for (int i = (stringLen - markLen); i > 0; i--)
                 {
                     cnt = cnt + 1;
-                    string temp = yourString.Substring(i, len2);
+                    string temp = yourString.Substring(i, markLen);
                     if (temp == yourMarker)
                     {
-                        newString = yourString.Substring(i + len2, cnt - 1);
+                        newString = yourString.Substring(i + markLen, cnt - 1);
                         break;
                     }
                 }

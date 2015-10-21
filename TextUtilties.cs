@@ -118,9 +118,9 @@ namespace StringFunctions
             }
             catch
             {
-                num = 0;
+                num = -1;
             }
-            num = found ? num : 0;
+            num = found ? num : -1;
             return num;
         }
 
